@@ -170,13 +170,7 @@ public class ReadingHistoryActivity extends AppCompatActivity implements Reading
 
                 try {
                     double newReading = Double.parseDouble(readingStr);
-
-                    if (isNewReadingValid(reading, newReading)) {
-                        updateReading(reading, newReading);
-                        dialog.dismiss();
-                    } else {
-                        etDialogReading.setError("Az új mérőállás nem lehet kisebb vagy egyenlő a korábban rögzített állásokkal.");
-                    }
+                    updateReading(reading, newReading);
                 } catch (NumberFormatException e) {
                     etDialogReading.setError("Érvénytelen szám formátum");
                 }
@@ -184,37 +178,6 @@ public class ReadingHistoryActivity extends AppCompatActivity implements Reading
         });
 
         dialog.show();
-    }
-
-    private boolean isNewReadingValid(MeterReading currentReading, double newReading) {
-        MeterReading previousReading = null;
-        MeterReading nextReading = null;
-
-        for (MeterReading reading : readings) {
-            if (reading.getId().equals(currentReading.getId())) {
-                continue;
-            }
-
-            if (reading.getDate().compareTo(currentReading.getDate()) < 0) {
-                if (nextReading == null || reading.getDate().compareTo(nextReading.getDate()) > 0) {
-                    nextReading = reading;
-                }
-            } else {
-                if (previousReading == null || reading.getDate().compareTo(previousReading.getDate()) < 0) {
-                    previousReading = reading;
-                }
-            }
-        }
-
-        if (previousReading != null && newReading <= previousReading.getReading()) {
-            return false;
-        }
-
-        if (nextReading != null && newReading >= nextReading.getReading()) {
-            return false;
-        }
-
-        return true;
     }
 
     private void updateReading(MeterReading reading, double newReading) {

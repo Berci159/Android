@@ -46,4 +46,17 @@
     <string name="reading_deleted">Leolvasás törölve</string>
     <string name="update_error">Hiba a frissítés során</string>
     <string name="delete_error">Hiba a törlés során</string>
+
+    <!-- Új szövegek a kamera és naptár funkciókhoz -->
+    <string name="take_photo">Fotó készítése</string>
+    <string name="set_reminder">Emlékeztető</string>
+    <string name="permission_camera_rationale">A gázóra fotózásához kamera engedélyre van szükség</string>
+    <string name="permission_calendar_rationale">Az emlékeztető beállításához naptár engedélyre van szükség</string>
+    <string name="permission_denied">Engedély megtagadva</string>
+    <string name="reminder_title">Gázóra leolvasás emlékeztető</string>
+    <string name="reminder_description">Ne felejtse el leolvasni a gázóra állását!</string>
+    <string name="reminder_set">Emlékeztető beállítva: %1$s</string>
+    <string name="photo_saved">Fotó elmentve</string>
+    <string name="error_saving_photo">Hiba a fotó mentésekor</string>
+    <string name="error_setting_reminder">Hiba az emlékeztető beállításakor</string>
 </resources>
