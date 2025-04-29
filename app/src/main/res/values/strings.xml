@@ -29,6 +29,21 @@
     <string name="meter_reading">Óraállás (m³)</string>
     <string name="submit_reading">Bejelentés</string>
     <string name="reading_history">Korábbi leolvasások</string>
+    <string name="reading_history_title">Leolvasási előzmények</string>
     <string name="view_all">Összes megtekintése</string>
     <string name="add_reading">Új leolvasás hozzáadása</string>
+
+    <!-- Előzmények oldal -->
+    <string name="edit_reading">Leolvasás szerkesztése</string>
+    <string name="delete_reading">Leolvasás törlése</string>
+    <string name="back_to_main">Vissza a főoldalra</string>
+    <string name="delete_confirmation">Biztosan törölni szeretné ezt a leolvasást?</string>
+    <string name="yes">Igen</string>
+    <string name="no">Nem</string>
+    <string name="save">Mentés</string>
+    <string name="cancel">Mégse</string>
+    <string name="reading_updated">Leolvasás frissítve</string>
+    <string name="reading_deleted">Leolvasás törölve</string>
+    <string name="update_error">Hiba a frissítés során</string>
+    <string name="delete_error">Hiba a törlés során</string>
 </resources>

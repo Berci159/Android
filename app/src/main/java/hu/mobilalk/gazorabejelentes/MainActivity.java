@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private ImageButton btnLogout;
+    private ImageButton btnHistory;
     private Button btnSubmitReading;
     private EditText etMeterReading;
     private TextView tvWelcome;
@@ -63,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             Intent loginIntent = new Intent(this, LoginActivity.class);
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
         currentUserId = currentUser.getUid();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -86,8 +91,17 @@ public class MainActivity extends AppCompatActivity {
         loadUserData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (currentUserId != null) {
+            loadMeterReadings();
+        }
+    }
+
     private void initViews() {
         btnLogout = findViewById(R.id.btnLogout);
+        btnHistory = findViewById(R.id.btnHistory);
         btnSubmitReading = findViewById(R.id.btnSubmitReading);
         etMeterReading = findViewById(R.id.etMeterReading);
         tvWelcome = findViewById(R.id.tvWelcome);
@@ -104,6 +118,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logoutUser();
+            }
+        });
+
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openReadingHistory();
             }
         });
 
@@ -124,9 +145,14 @@ public class MainActivity extends AppCompatActivity {
         btnViewAllHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Ez a funkció még fejlesztés alatt áll!", Toast.LENGTH_SHORT).show();
+                openReadingHistory();
             }
         });
+    }
+
+    private void openReadingHistory() {
+        Intent historyIntent = new Intent(MainActivity.this, ReadingHistoryActivity.class);
+        startActivity(historyIntent);
     }
 
     private void loadUserData() {
@@ -140,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
                             if (document.exists()) {
                                 String fullName = document.getString("fullName");
                                 userMeterNumber = document.getString("meterNumber");
+
                                 tvWelcome.setText(getString(R.string.welcome_user, fullName));
+
                                 loadMeterReadings();
                             } else {
                                 Log.d(TAG, "No such document");
@@ -170,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                                 reading.setId(document.getId());
                                 readings.add(reading);
                             }
+
                             updateReadingsUI(readings);
                         } else {
                             Log.d(TAG, "Error getting readings: ", task.getException());
@@ -184,9 +213,12 @@ public class MainActivity extends AppCompatActivity {
             tvLastReading.setText(R.string.no_readings_yet);
         } else {
             lastReading = readings.get(0);
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.", Locale.getDefault());
             String dateStr = dateFormat.format(lastReading.getDateAsDate());
+
             tvLastReading.setText(getString(R.string.last_reading_value, dateStr, lastReading.getReading()));
+
             Toast.makeText(this, "Összesen " + readings.size() + " mérőállás betöltve", Toast.LENGTH_SHORT).show();
         }
     }
@@ -201,10 +233,12 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             double reading = Double.parseDouble(readingStr);
+
             if (lastReading != null && reading <= lastReading.getReading()) {
                 etMeterReading.setError("Az új mérőállás nem lehet kisebb vagy egyenlő az előzőnél");
                 return;
             }
+
             MeterReading newReading = new MeterReading(
                     null,
                     reading,
@@ -220,7 +254,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onSuccess(DocumentReference documentReference) {
                             Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                             Toast.makeText(MainActivity.this, "Mérőállás sikeresen rögzítve!", Toast.LENGTH_SHORT).show();
+
                             etMeterReading.setText("");
+
                             loadMeterReadings();
                         }
                     })
@@ -239,7 +275,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void logoutUser() {
         mAuth.signOut();
+
         Toast.makeText(MainActivity.this, "Sikeres kijelentkezés!", Toast.LENGTH_SHORT).show();
+
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
